@@ -221,7 +221,7 @@ V& HashMap<K, V, H>::operator[](const K& key) {
     // we have to initialize the pointer with something
     // could be a deleted key or just unused
     
-    V default_val;
+    V default_val = V();
     set(key, default_val);
   }
   
