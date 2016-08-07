@@ -204,11 +204,15 @@ double HashMap<K, V, H>::loadFactor() const {
 template<typename K, typename V, typename H>
 HashMap<K, V, H>::~HashMap(){
   for (auto& slot_iter : data_){
-    delete slot_iter.key;
-    slot_iter.key = nullptr;
-    
-    delete slot_iter.val;
-    slot_iter.val = nullptr;
+    if (slot_iter.state != Slot::State::UNUSED){
+      delete slot_iter.key;
+      slot_iter.key = nullptr;
+      
+      if (slot_iter.state == Slot::State::USED){
+        delete slot_iter.val;
+        slot_iter.val = nullptr;
+      }
+    }
   }
 }
 
