@@ -34,6 +34,8 @@ class HashMap {
     int find_index(const K& key) const;
     double loadFactor() const;
   
+    void set(K* key_ptr, V* val_ptr);
+
     struct Slot {
         enum class State{USED, UNUSED, DELETED};
         K* key;
@@ -130,16 +132,16 @@ V& HashMap<K,V,H>::get(const K& key) const {
 }
 
 template<typename K, typename V, typename H>
-void HashMap<K, V, H>::set(const K& key, const V& val) {
-  int idx = find_index(key);
+void HashMap<K, V, H>::set(K* key_ptr, V* val_ptr) {
+  int idx = find_index(*key_ptr);
   
   if (data_[idx].val != nullptr){
     delete data_[idx].val;
     delete data_[idx].key;
   }
   
-  data_[idx].key = new K(key);
-  data_[idx].val = new V(val);
+  data_[idx].key = key_ptr;
+  data_[idx].val = val_ptr;
   
   if (data_[idx].state == Slot::State::UNUSED) {
     used_slots_++;
@@ -152,6 +154,13 @@ void HashMap<K, V, H>::set(const K& key, const V& val) {
   }
   
 }
+
+
+template<typename K, typename V, typename H>
+void HashMap<K, V, H>::set(const K& key, const V& val) {
+  set(new K(key), new V(val));
+}
+
 
 template<typename K, typename V, typename H>
 void HashMap<K, V, H>::erase(const K& key) {
@@ -177,14 +186,7 @@ void HashMap<K, V, H>::reorder(){
   for(auto& slot_iter : data_copy) {
 
     if (slot_iter.state == Slot::State::USED) {
-      set(*slot_iter.key, *slot_iter.val);
-      
-      delete slot_iter.key;
-      slot_iter.key = nullptr;
-
-      delete slot_iter.val;
-      slot_iter.val = nullptr;
-
+      set(slot_iter.key, slot_iter.val);
     }
     else if (slot_iter.state == Slot::State::DELETED) {
       delete slot_iter.key;
@@ -209,9 +211,6 @@ HashMap<K, V, H>::~HashMap(){
     slot_iter.val = nullptr;
   }
 }
-
-// IMPORTANT: this reference is lost when doing reorder 
-// hence, multiple calls to set or [] should not be done
 
 template<typename K, typename V, typename H>
 V& HashMap<K, V, H>::operator[](const K& key) {
