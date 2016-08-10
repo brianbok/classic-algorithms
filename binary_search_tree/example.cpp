@@ -7,6 +7,11 @@ int main(){
   
   bst.set(1,"aaa");
   bst.set(2,"baa");
+  bst.set(-1,"baa");
+  bst.set(0,"baa");
+  bst.set(-2,"baa");
+  bst.set(-3,"baa");
+  bst.set(5,"baa");
   //bst.erase(2);
   
   dicts::BST<int, std::string>::ConstIterator it = bst.begin();
