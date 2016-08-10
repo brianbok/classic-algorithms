@@ -10,19 +10,26 @@ template<class T>
 class MaxHeap{
    public:
       T getMax();
-      void popMax();
-      MaxHeap(T a[], int n);
-   private:
-      std::vector<T> elems;
       
+      void popMax();
+      
+      void insert(T el);
+      
+      MaxHeap(T a[], int n);
+      MaxHeap();
+      
+   private:
       void heapify();
       void heapDown(int);
+      void heapUp(int);
       
       int leftChild(int);
       int rightChild(int);
       int parent(int);
       
       bool validNode(int);
+
+      std::vector<T> elems;
 };
 
 template <class T>
@@ -31,6 +38,25 @@ MaxHeap<T>::MaxHeap(T a[], int n){
    heapify();
 }
 
+template <class T>
+MaxHeap<T>::MaxHeap(){
+   elems = std::vector<T>();
+}
+
+
+template <class T>
+void MaxHeap<T>::insert(T e){
+  elems.push_back(e);
+  heapUp((int) elems.size() - 1);
+}
+
+template <class T>
+void MaxHeap<T>::heapUp(int x){
+  while(x != 0 and elems[x] > elems[parent(x)]){
+    std::swap(elems[x], elems[parent(x)]);
+    x = parent(x);
+  }
+}
 
 template <class T>
 void MaxHeap<T>::heapDown(int x){
