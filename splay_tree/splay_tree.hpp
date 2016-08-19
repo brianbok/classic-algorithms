@@ -101,11 +101,13 @@ class SplayDict {
     
     bool sideOfChild(Node* subtree, bool zag1, bool zag2) const;
     
-    void splay(Node* subtree);
+    Node* splay(Node* subtree);
     
     void set(Node*& subtree, Node* parent, const K& key, const V& val);
     
     static Node* subtreeMin(Node* subtree);
+    
+    static Node* subtreeMax(Node* subtree);
     
     static Node* subtreeMaxKey(Node* subtree, Node* parent);
     
@@ -164,8 +166,8 @@ bool SplayDict<K, V>::exists(const K& key) const {
 template<typename K, typename V> 
 V& SplayDict<K, V>::get(const K& key){
   Node* node = findNode(root, key);
-  splay(node);
-  return node->val;
+  root = splay(node);  
+  return root->val;
 }
 
 template<typename K, typename V> 
@@ -215,11 +217,12 @@ void SplayDict<K, V>::set(Node*& subtree, Node* parent, const K& key, const V& v
   if (subtree == nullptr) {
     // by using the reference to pointer, we update parent's pointer 
     subtree = new Node(parent, key, val);
-    splay(subtree);
+    root = splay(subtree);
   }
   else if (subtree->key == key) {
     subtree->val = val;
-    splay(subtree);
+    root = splay(subtree);
+
   }
   else if (key < subtree->key) {
     set(subtree->left, subtree, key, val);
@@ -246,6 +249,11 @@ typename SplayDict<K,V>::Node* SplayDict<K, V>::subtreeMin(Node* subtree){
 }
 
 template<typename K, typename V> 
+typename SplayDict<K,V>::Node* SplayDict<K, V>::subtreeMax(Node* subtree){
+  return subtreeMaxKey(subtree->right, subtree);
+}
+
+template<typename K, typename V> 
 typename SplayDict<K,V>::Node* SplayDict<K, V>::subtreeMinKey(Node* subtree, Node* parent){
   if (subtree == nullptr){
     return parent;
@@ -257,7 +265,7 @@ typename SplayDict<K,V>::Node* SplayDict<K, V>::subtreeMinKey(Node* subtree, Nod
 
 template<typename K, typename V> 
 void SplayDict<K, V>::erase_node(Node* node){
-
+/*
   if (node->left == nullptr and node->right == nullptr){
     if (node != root){
       if (node->parent->left == node){
@@ -306,7 +314,34 @@ void SplayDict<K, V>::erase_node(Node* node){
     }
     
     delete node;
+  }*/
+  
+  splay(node);
+  
+  if (node->left != nullptr){
+    Node* leftSubtree = node->left;
+    Node* rightSubtree = node->right;
+    
+    leftSubtree->parent = nullptr;
+    rightSubtree->parent = nullptr;
+    delete node;
+    
+    Node* maxLeft = subtreeMax(leftSubtree);
+    
+    splay(maxLeft);
+    maxLeft->right = rightSubtree;
+    rightSubtree->parent = maxLeft;
+    root = maxLeft;
+    
   }
+  else {
+    Node* rightSubtree = node->right;
+    rightSubtree->parent = nullptr;
+    delete node;
+    
+    root = rightSubtree;
+  }
+  
   
 }
 
@@ -459,7 +494,7 @@ void SplayDict<K, V>::leftRotate(Node* n) {
 }
 
 template<typename K, typename V>
-void SplayDict<K, V>::splay(Node* subtree){
+typename SplayDict<K,V>::Node* SplayDict<K, V>::splay(Node* subtree){
   while(hasGrandParent(subtree)) {
     if (sideOfChild(subtree, false, false)) {
       // Zig Zig
@@ -494,8 +529,8 @@ void SplayDict<K, V>::splay(Node* subtree){
     }
   }
   
+  return subtree;
   
-  root = subtree;
 }
 
 template<typename K, typename V>
@@ -504,12 +539,12 @@ void SplayDict<K,V>::printNode(std::ostream& os, Node* node, std::string prefix,
       return;
     }
     os << (prefix + (isTail ? "└── " : "├── ")) << node->key << std::endl;
-    if (node->right != nullptr){
-      printNode(os, node->left, (prefix + (isTail ? "    " : "│   ")), false);
-      printNode(os, node->right, (prefix + (isTail ? "    " : "│   ")), true);
+    if (node->left != nullptr){
+      printNode(os, node->right, (prefix + (isTail ? "    " : "│   ")), false);
+      printNode(os, node->left, (prefix + (isTail ? "    " : "│   ")), true);
     }
     else {
-      printNode(os, node->left, (prefix + (isTail ? "    " : "│   ")), true);
+      printNode(os, node->right, (prefix + (isTail ? "    " : "│   ")), true);
     }
 } 
 

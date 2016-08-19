@@ -90,14 +90,14 @@ int main(){
   spDict.set(5,"baa");
   //std::cout << spDict << std::endl;
 
-  //spDict.erase(2);
-  
+  spDict.erase(2);
+  std::cout << spDict << std::endl;
+
   
   dicts::SplayDict<int, std::string>::ConstIterator it = spDict.begin();
   
   std::cout << spDict << std::endl;
   for(it = spDict.begin(); it != spDict.end(); it++){
-  
     std::cout<< (*it).first <<" "<<(*it).second<<std::endl;
       
   }
