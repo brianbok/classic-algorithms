@@ -265,81 +265,31 @@ typename SplayDict<K,V>::Node* SplayDict<K, V>::subtreeMinKey(Node* subtree, Nod
 
 template<typename K, typename V> 
 void SplayDict<K, V>::erase_node(Node* node){
-/*
-  if (node->left == nullptr and node->right == nullptr){
-    if (node != root){
-      if (node->parent->left == node){
-        node->parent->left = nullptr;
-      }
-      else{
-        node->parent->right = nullptr;
-      }
-    }
-    
-    delete node;
-  }
-  else if (node->left != nullptr and node->right != nullptr){ 
-    // Going always right in the left subtree is the predecessor
-    Node* predecessor = subtreeMaxKey(node->left, node);
-    
-    std::swap(node->key, predecessor->key);
-    std::swap(node->val, predecessor->val);
-    
-    erase_node(predecessor); 
-  }
-  else {
-    Node* child;
-    
-    if (node->left != nullptr) {
-      child = node->left;
-    }
-    else {
-      child = node->right;
-    }
-    
-    // root doesn't have a parent
-    if (root != node ){
-      if (node->parent->left == node){
-        node->parent->left = child;
-        child->parent = node->parent;
-      }
-      else {
-        node->parent->right = child;
-        child->parent = node->parent;
-      }
-    }
-    else {
-      root = child;
-      child->parent = nullptr;
-    }
-    
-    delete node;
-  }*/
   
   splay(node);
   
   if (node->left != nullptr){
-    Node* leftSubtree = node->left;
-    Node* rightSubtree = node->right;
+    Node* left_subtree = node->left;
+    Node* right_subtree = node->right;
     
-    leftSubtree->parent = nullptr;
-    rightSubtree->parent = nullptr;
+    left_subtree->parent = nullptr;
+    right_subtree->parent = nullptr;
     delete node;
     
-    Node* maxLeft = subtreeMax(leftSubtree);
+    Node* max_left = subtreeMax(left_subtree);
     
-    splay(maxLeft);
-    maxLeft->right = rightSubtree;
-    rightSubtree->parent = maxLeft;
-    root = maxLeft;
+    splay(max_left);
+    max_left->right = right_subtree;
+    right_subtree->parent = max_left;
+    root = max_left;
     
   }
   else {
-    Node* rightSubtree = node->right;
-    rightSubtree->parent = nullptr;
+    Node* right_subtree = node->right;
+    right_subtree->parent = nullptr;
     delete node;
     
-    root = rightSubtree;
+    root = right_subtree;
   }
   
   
