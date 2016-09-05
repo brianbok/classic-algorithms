@@ -1,6 +1,6 @@
 # classic-algorithms
 
-# Practice for Algorithms and Data Structures II. Implementation of classic algorithms and data structures in C++11
+## Practice for Algorithms and Data Structures II. Implementation of classic algorithms and data structures in C++11
 
 Data structures implemented:
   * Splay Tree
