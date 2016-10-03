@@ -273,14 +273,16 @@ void SplayDict<K, V>::erase_node(Node* node){
     Node* right_subtree = node->right;
     
     left_subtree->parent = nullptr;
-    right_subtree->parent = nullptr;
+    if(right_subtree != nullptr)
+		right_subtree->parent = nullptr;
     delete node;
     
     Node* max_left = subtreeMax(left_subtree);
     
     splay(max_left);
     max_left->right = right_subtree;
-    right_subtree->parent = max_left;
+    if(right_subtree != nullptr)
+		right_subtree->parent = max_left;
     root = max_left;
     
   }
